@@ -15,7 +15,7 @@ AWS上のあらゆるログは CloudWatchLogs に溜まっていきます。<br>
 
 ## 使い方
 1. 出力先S3バケット作成
-1. policy.json を参考にS3バケットにアクセスポリシー設定
+1. policy.json を参考にS3バケットにパケットポリシー設定
 1. sample.sh を環境に合わせて編集・設置
 1. 日時で動くよう crontab などに設定
 
