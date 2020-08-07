@@ -1,21 +1,9 @@
 #!/bin/sh
 
-EXPORT_TIMEZONE=${EXPORT_TIMEZONE:-JST}
-EXPORT_DATECMD=${EXPORT_DATECMD:-date}
-EXPORT_DESTINATION_S3BUCKET=$EXPORT_DESTINATION_S3BUCKET
+export AWS_DEFAULT_PROFILE={your_aws}
 
-loggroups=$(aws logs describe-log-groups \
-  --query logGroups[].logGroupName \
-  --output text)
+export EXPORT_TIMEZONE={JST or UTC}
+export EXPORT_DATECMD={date or gdate}
+export EXPORT_DESTINATION_S3BUCKET={your_s3bucket}
 
-for loggroup in $loggroups;
-do
-  echo $loggroup
-  sh export.sh $loggroup
-done
-
-# サイズ確認
-aws s3 ls ${EXPORT_DESTINATION_S3BUCKET} \
-  --recursive \
-  --human \
-  --sum
+sh all.sh
