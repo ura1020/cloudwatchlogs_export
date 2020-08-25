@@ -29,8 +29,8 @@ target_date=${2:-$default_date}
 # タイムゾーン設定
 echo "EXPORT_TIMEZONE:$EXPORT_TIMEZONE"
 if [ "$EXPORT_TIMEZONE" = "JST" ]; then
-  log_start_time=$($EXPORT_DATECMD +%s --date="$target_date 00:00:00 $EXPORT_TIMEZONE hour ago")000
-  log_end_time=$($EXPORT_DATECMD +%s --date="$target_date 23:59:59 $EXPORT_TIMEZONE hour ago")999
+  log_start_time=$($EXPORT_DATECMD +%s --date="$target_date 00:00:00 9 hour ago")000
+  log_end_time=$($EXPORT_DATECMD +%s --date="$target_date 23:59:59 9 hour ago")999
 else
   # UTC
   log_start_time=$($EXPORT_DATECMD +%s --date="$target_date 00:00:00")000
