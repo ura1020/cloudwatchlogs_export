@@ -10,8 +10,6 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
-#EXPORT_TIMEZONE=UTC
-EXPORT_TIMEZONE=${EXPORT_TIMEZONE:-JST}
 EXPORT_DATECMD=${EXPORT_DATECMD:-date}
 EXPORT_DESTINATION_S3BUCKET=$EXPORT_DESTINATION_S3BUCKET
 
@@ -26,16 +24,9 @@ encode_log_group_name=$(echo ${log_group_name//\//_} | sed 's/,/t/g')
 default_date=$($EXPORT_DATECMD --date '1 day ago' +%Y-%m-%d)
 target_date=${2:-$default_date}
 
-# タイムゾーン設定
-echo "EXPORT_TIMEZONE:$EXPORT_TIMEZONE"
-if [ "$EXPORT_TIMEZONE" = "JST" ]; then
-  log_start_time=$($EXPORT_DATECMD +%s --date="$target_date 00:00:00 9 hour ago")000
-  log_end_time=$($EXPORT_DATECMD +%s --date="$target_date 23:59:59 9 hour ago")999
-else
-  # UTC
-  log_start_time=$($EXPORT_DATECMD +%s --date="$target_date 00:00:00")000
-  log_end_time=$($EXPORT_DATECMD +%s --date="$target_date 23:59:59")999
-fi
+# 取得範囲(unixtime)
+log_start_time=$($EXPORT_DATECMD +%s --date="$target_date 00:00:00")000
+log_end_time=$($EXPORT_DATECMD +%s --date="$target_date 23:59:59")999
 
 # エクスポート実施
 task_id=$(aws logs create-export-task \
