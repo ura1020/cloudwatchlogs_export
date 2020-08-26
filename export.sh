@@ -5,8 +5,8 @@
 # author ura1020
 #===================================================================================
 
-if [ $# -lt 1 ]; then
-  echo "Usage: $0 loggroup YYYY-MM-DD" 1>&2
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 loggroup exportdir YYYY-MM-DD" 1>&2
   exit 1
 fi
 
@@ -18,8 +18,8 @@ echo "start_time:$start_time"
 
 log_group_name=$1
 
-# s3上で深いディレクトリ構造にならないよう/を_に置換
-encode_log_group_name=$(echo ${log_group_name//\//_} | sed 's/,/t/g')
+default_exportdir=$(echo ${log_group_name//\//_} | sed 's/,/t/g')
+exportdir=${2:-$default_exportdir}
 
 default_date=$($EXPORT_DATECMD --date '1 day ago' +%Y-%m-%d)
 target_date=${2:-$default_date}
@@ -35,7 +35,7 @@ task_id=$(aws logs create-export-task \
   --from ${log_start_time} \
   --to ${log_end_time} \
   --destination "${EXPORT_DESTINATION_S3BUCKET}" \
-  --destination-prefix "${encode_log_group_name}/${target_date}" \
+  --destination-prefix "${exportdir}/${target_date}" \
   --query 'taskId' \
   --output text)
 echo "task_id:$task_id"
@@ -74,4 +74,9 @@ do
 done
 
 end_time=$($EXPORT_DATECMD '+%Y-%m-%d %H:%M:%S')
-echo "end_time:$start_time"
+echo "end_time:$end_time"
+
+aws s3 ls ${EXPORT_DESTINATION_S3BUCKET}/${exportdir}/${target_date} \
+  --recursive \
+  --human \
+  --sum
